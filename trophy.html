@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ဘေဘီ အတွက် ဆု</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700;900&family=Noto+Serif+Myanmar:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: dark;
+  --stage: #1c1440;
+  --stage-deep: #100a2a;
+  --gold: #f5c542;
+  --gold-deep: #c9952a;
+  --cream: #fff6e0;
+  --soft: #b8add9;
+  --ink: #24184f;
+  --font: "Noto Sans Myanmar", "Padauk", "Myanmar Text", system-ui, sans-serif;
+  --font-title: "Noto Serif Myanmar", "Noto Sans Myanmar", serif;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body { background: radial-gradient(70% 45% at 50% 22%, #4a3aa0 0%, var(--stage) 55%, var(--stage-deep) 100%) var(--stage-deep); color: var(--cream); font-family: var(--font); font-size: 17px; line-height: 1.85; padding: 26px 16px 34px; overflow-x: hidden; }
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.wrap { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; align-items: center; text-align: center; }
+.eyebrow { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .12em; color: var(--gold); }
+h1 { font-family: var(--font-title); font-weight: 900; font-size: clamp(30px, 9vw, 42px); line-height: 1.5; margin: 0; overflow-wrap: anywhere; }
+h1 span { color: var(--gold); }
+.cup { width: 200px; max-width: 62%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 16px; filter: drop-shadow(0 0 26px rgba(245,197,66,.45)); }
+.cup svg { display: block; width: 100%; height: auto; }
+.cup.bounce { animation: bounce .5s cubic-bezier(.3,1.6,.5,1); }
+@keyframes bounce { 30% { transform: translateY(-16px) rotate(-5deg); } 60% { transform: translateY(0) rotate(4deg); } }
+.cup:focus-visible, .again:focus-visible { outline: 3px solid var(--cream); outline-offset: 4px; }
+.hint { margin: 0; color: var(--soft); font-weight: 700; min-height: 1.85em; }
+.cert { width: 100%; background: var(--cream); color: var(--ink); border-radius: 8px; padding: 20px 20px 18px; border: 3px double var(--gold-deep); outline: 2px solid var(--gold-deep); outline-offset: -9px; }
+.cert small { display: block; font-size: 13px; font-weight: 700; color: var(--gold-deep); }
+.cert .award { font-family: var(--font-title); font-weight: 900; font-size: clamp(22px, 6.4vw, 27px); line-height: 1.6; margin: 4px 0 0; overflow-wrap: anywhere; }
+.cert .name { font-family: var(--font-title); font-weight: 900; font-size: 34px; line-height: 1.5; color: #b0123f; margin: 2px 0; }
+.cert p { margin: 8px 0 0; overflow-wrap: anywhere; }
+.cert .sig { font-weight: 700; text-align: right; margin-top: 12px; }
+.judges { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.judges li { background: rgba(255,246,224,.09); border: 1.5px solid rgba(245,197,66,.5); border-radius: 10px; padding: 8px 4px 10px; min-width: 0; }
+.judges small { display: block; font-size: 12px; color: var(--soft); overflow-wrap: anywhere; }
+.judges b { display: block; font-family: var(--font-title); font-size: 26px; line-height: 1.4; color: var(--gold); }
+.judges li.hidden b { color: var(--soft); }
+.again { font: inherit; font-size: 14px; font-weight: 700; color: var(--soft); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 6px 10px; }
+@media (prefers-reduced-motion: reduce) { .cup.bounce { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="wrap">
+  <p class="eyebrow" id="eyebrow">ကိုကို့နှလုံးသား ပန်းချီပြိုင်ပွဲ</p>
+  <h1>ပထမဆုက <span id="toName">ဘေဘီ</span> အတွက်</h1>
+
+  <button class="cup" id="cup" type="button" aria-label="ဆုဖလား။ နှိပ်ပြီး ဒိုင်တွေရဲ့ အမှတ်ကို ကြည့်ပါ။">
+    <svg viewBox="0 0 200 220" aria-hidden="true">
+      <g fill="none" stroke="#f5c542" stroke-width="10"><circle cx="46" cy="62" r="24"/><circle cx="154" cy="62" r="24"/></g>
+      <path d="M50 26h100v44c0 40-25 64-50 64S50 110 50 70z" fill="#f5c542" stroke="#c9952a" stroke-width="4"/>
+      <path d="M64 34h14v40c0 22 6 36 14 46-18-8-28-24-28-46z" fill="#fff6e0" opacity=".55"/>
+      <path d="M100 48l7 15 16 2-12 11 3 16-14-8-14 8 3-16-12-11 16-2z" fill="#b0123f"/>
+      <rect x="91" y="132" width="18" height="30" fill="#c9952a"/>
+      <rect x="62" y="160" width="76" height="16" rx="4" fill="#f5c542" stroke="#c9952a" stroke-width="3"/>
+      <rect x="48" y="176" width="104" height="34" rx="5" fill="#24184f" stroke="#f5c542" stroke-width="3"/>
+      <text x="100" y="200" text-anchor="middle" font-family="Georgia, serif" font-weight="700" font-size="20" fill="#f5c542">No. 1</text>
+    </svg>
+  </button>
+  <p class="hint" id="hint" aria-live="polite">ဒိုင်အားလုံး တညီတညွတ်တည်း: ပထမဆု ဘေဘီ။</p>
+
+  <ul class="judges" id="judges"><li><small>ဒိုင် ၁: ကိုကို</small><b>၁၀/၁၀</b></li><li><small>ဒိုင် ၂: ကိုကို့နှလုံးသား</small><b>၁၀/၁၀</b></li><li><small>ဒိုင် ၃: ကိုကို့မျက်လုံး</small><b>၁၀/၁၀</b></li></ul>
+
+  <div class="cert">
+    <small id="certTop">ဂုဏ်ပြုလွှာ</small>
+    <p class="award" id="award">ကိုကို့ကမ္ဘာရဲ့ အကောင်းဆုံး ပန်းချီဆရာမ ဆု</p>
+    <p class="name" id="certName">ဘေဘီ</p>
+    <p id="message">ပြိုင်ပွဲက ဆုမပေးလိုက်ပေမယ့် ကိုကို့အတွက်တော့ ဘေဘီက အမြဲ ပထမပဲ။ ဘေဘီ ကြိုးစားခဲ့တာကို ကိုကို အကုန်မြင်တယ်၊ အရမ်းလည်း ဂုဏ်ယူတယ်။ ဆက်ဆွဲပါနော်။ ကိုကို အမြဲ ဘေးကနေ အားပေးနေမယ်။</p>
+    <p class="sig" id="sig">— ကိုကို</p>
+  </div>
+  <button class="again" id="again" type="button" style="visibility:hidden">ဆုပေးပွဲ ပြန်စမယ်</button>
+</div>
+
+<script>
+/* The page's text is written in the HTML above. This script only runs the score reveal. */
+const JUDGES = [["ဒိုင် ၁: ကိုကို", "၁၀/၁၀"], ["ဒိုင် ၂: ကိုကို့နှလုံးသား", "၁၀/၁၀"], ["ဒိုင် ၃: ကိုကို့မျက်လုံး", "၁၀/၁၀"]];
+const HINTS = ["ဆုဖလားကို နှိပ်ပြီး ဒိုင်တွေရဲ့ အမှတ်ကို ကြည့်ပါ။", "ဒိုင်နောက်တစ်ယောက် ကျန်သေးတယ်၊ ထပ်နှိပ်ပါ။", "ဒိုင်အားလုံး တညီတညွတ်တည်း: ပထမဆု ဘေဘီ။"];
+const $ = id => document.getElementById(id);
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let shown = 0;
+
+function render() {
+  const ul = $("judges"); ul.textContent = "";
+  JUDGES.forEach((j, k) => {
+    const li = document.createElement("li"), s = document.createElement("small"), b = document.createElement("b");
+    s.textContent = j[0]; b.textContent = k < shown ? j[1] : "?"; if (k >= shown) li.className = "hidden";
+    li.append(s, b); ul.append(li);
+  });
+  $("hint").textContent = shown === 0 ? HINTS[0] : shown < JUDGES.length ? HINTS[1] : HINTS[2];
+  $("again").style.visibility = shown ? "visible" : "hidden";
+}
+
+$("cup").addEventListener("click", () => {
+  const cup = $("cup"); cup.classList.remove("bounce"); void cup.offsetWidth; cup.classList.add("bounce");
+  if (shown < JUDGES.length) shown++;
+  render();
+  if (shown === JUDGES.length && !reduced) confetti();
+});
+$("again").addEventListener("click", () => { shown = 0; render(); });
+
+let raf = 0;
+function confetti() {
+  const c = $("confetti"), ctx = c.getContext("2d"), dpr = Math.min(devicePixelRatio || 1, 2);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["#f5c542", "#fff6e0", "#ff6f9c", "#8fd3ff"];
+  const ps = Array.from({ length: 110 }, () => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.5, w: 6 + Math.random() * 6, h: 10 + Math.random() * 8, vy: 2 + Math.random() * 3, vx: -1 + Math.random() * 2, r: Math.random() * 6.28, vr: -0.15 + Math.random() * 0.3, c: cols[Math.floor(Math.random() * cols.length)] }));
+  cancelAnimationFrame(raf);
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    for (const p of ps) {
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      if (p.y < innerHeight + 20) alive = true;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+    }
+    if (alive && t - t0 < 8000) raf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+render();
+</script>
+</body>
+</html>
