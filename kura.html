@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For Baby Kura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime:wght@400;700&family=Gloock&family=Noto+Sans+Myanmar:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --desk: #5c1731;
+  --desk-deep: #44102a;
+  --paper: #fdf1f3;
+  --ink: #1f2a55;
+  --ink-soft: #5b6288;
+  --stamp: #e0314b;
+  --air-blue: #2f4fa8;
+  --font-display: "Gloock", "Noto Sans Myanmar", Georgia, serif;
+  --font-hand: "Caveat", "Noto Sans Myanmar", "Segoe Script", cursive;
+  --font-post: "Courier Prime", "Noto Sans Myanmar", "Courier New", monospace;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: radial-gradient(120% 90% at 50% 0%, var(--desk) 0%, var(--desk-deep) 100%); color: var(--ink); font-family: var(--font-post); display: flex; flex-direction: column; align-items: center; gap: 20px; padding: 28px 16px 24px; overflow-x: hidden; }
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.card { width: 100%; max-width: 540px; margin: auto 0; padding: 11px; border-radius: 6px; background: repeating-linear-gradient(-45deg, var(--stamp) 0 14px, var(--paper) 14px 28px, var(--air-blue) 28px 42px, var(--paper) 42px 56px); box-shadow: 0 24px 50px -18px rgba(0,0,0,.6); transform: rotate(-1.2deg); }
+.inner { position: relative; background: var(--paper); border-radius: 2px; padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 14px; }
+.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.label { font-size: 12px; letter-spacing: .28em; text-transform: uppercase; color: var(--ink-soft); margin: 4px 0 0; }
+.to { font-family: var(--font-hand); font-size: 30px; font-weight: 700; line-height: 1.1; margin: 10px 0 0; overflow-wrap: anywhere; }
+.stamp { flex: none; width: 68px; height: 80px; border: 2px dashed var(--stamp); padding: 5px; transform: rotate(4deg); }
+.stamp div { height: 100%; background: var(--stamp); display: grid; place-items: center; }
+.stamp svg { width: 34px; height: 34px; fill: var(--paper); }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(34px, 9vw, 52px); line-height: 1.08; margin: 6px 0 0; text-wrap: balance; overflow-wrap: anywhere; }
+.note { font-family: var(--font-hand); font-size: 24px; line-height: 1.25; color: var(--ink-soft); margin: 0; overflow-wrap: anywhere; }
+.arena { position: relative; height: 170px; border-top: 1px solid rgba(31,42,85,.18); margin-top: 4px; }
+.btn { position: absolute; font-family: var(--font-post); font-weight: 700; font-size: 17px; letter-spacing: .06em; padding: 12px 26px; border-radius: 999px; cursor: pointer; white-space: nowrap; transition: left .22s ease, top .22s ease, transform .22s ease; }
+.btn:focus-visible { outline: 3px solid var(--air-blue); outline-offset: 3px; }
+#yes { left: calc(50% - 100px); top: 58px; background: var(--stamp); color: #fff; border: 2px solid var(--stamp); box-shadow: 0 6px 0 #a81e34; }
+#yes:active { box-shadow: 0 2px 0 #a81e34; translate: 0 4px; }
+#no { left: calc(50% + 14px); top: 58px; background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+.from { font-family: var(--font-hand); font-size: 26px; font-weight: 700; text-align: right; margin: 0; overflow-wrap: anywhere; }
+.accepted { display: none; flex-direction: column; gap: 12px; align-items: flex-start; border-top: 1px solid rgba(31,42,85,.18); padding-top: 16px; }
+.done .arena { display: none; }
+.done .accepted { display: flex; }
+.again { font-family: var(--font-post); font-size: 13px; background: none; border: 0; padding: 4px 0; color: var(--ink-soft); text-decoration: underline; cursor: pointer; }
+.again:focus-visible { outline: 2px solid var(--air-blue); outline-offset: 2px; }
+.postmark { display: none; position: absolute; top: 12px; right: 58px; width: 104px; height: 104px; border: 3px double var(--ink); border-radius: 50%; color: var(--ink); place-items: center; text-align: center; font-size: 11px; letter-spacing: .12em; line-height: 1.5; transform: rotate(-14deg); opacity: .82; pointer-events: none; }
+.postmark b { display: block; font-size: 22px; letter-spacing: .1em; }
+.done .postmark { display: grid; animation: thump .35s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes thump { from { transform: rotate(-14deg) scale(2.4); opacity: 0; } to { transform: rotate(-14deg) scale(1); opacity: .82; } }
+@media (max-width: 420px) { .inner { padding: 18px 16px 20px; } .postmark { right: 44px; } }
+@media (prefers-reduced-motion: reduce) { .btn { transition: none; } .done .postmark { animation: none; } }
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<main class="card" id="card">
+  <div class="inner">
+    <div class="top">
+      <div>
+        <p class="label">Post card · par avion</p>
+        <p class="to">To: <span id="toName">Baby Kura</span></p>
+      </div>
+      <div class="stamp" aria-hidden="true"><div>
+        <svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.3C.9 8.2 2.8 4.5 6.3 4.5c2 0 3.3 1 4.2 2.3l1.5 2.1 1.5-2.1c.9-1.3 2.2-2.3 4.2-2.3 3.5 0 5.4 3.700 3.900 7.200C19.500 16.400 12 21 12 21z"/></svg>
+      </div></div>
+    </div>
+    <div class="postmark" aria-hidden="true"><div>ACCEPTED<b>YES</b><span id="markDate"></span></div></div>
+
+    <h1 id="question">Will you be mine?</h1>
+    <p class="note" id="note">I have been wanting to ask you this for a while.</p>
+
+    <div class="arena" id="arena">
+      <button class="btn" id="yes" type="button">Yes</button>
+      <button class="btn" id="no" type="button">No</button>
+    </div>
+
+    <div class="accepted" aria-live="polite">
+      <p class="note" id="yesMessage">You just made me the happiest person alive.</p>
+      <button class="again" id="again" type="button">Play it again</button>
+    </div>
+
+    <p class="from">— <span id="fromName">Koko</span></p>
+  </div>
+</main>
+
+<script>
+/* Edit this block for each customer. */
+const CONFIG = {
+  to: "Baby Kura",
+  from: "Koko",
+  question: "Will you be mine?",
+  note: "I have been wanting to ask you this for a while.",
+  yesTitle: "It's official.",
+  yesMessage: "You just made me the happiest person alive.",
+  pleas: ["No", "Are you sure?", "Think again", "Really?", "Don't do this to me", "Can't catch me", "Last chance", "Okay, I give up"]
+};
+
+const $ = id => document.getElementById(id);
+const card = $("card"), arena = $("arena"), yes = $("yes"), no = $("no");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let state = { to: CONFIG.to, from: CONFIG.from, question: CONFIG.question, note: CONFIG.note, dodges: 0, accepted: false };
+
+function render() {
+  $("toName").textContent = state.to;
+  $("fromName").textContent = state.from;
+  $("question").textContent = state.accepted ? CONFIG.yesTitle : state.question;
+  $("note").textContent = state.accepted ? state.from + " ♥ " + state.to : state.note;
+  $("yesMessage").textContent = CONFIG.yesMessage;
+  card.classList.toggle("done", state.accepted);
+  const gaveUp = state.dodges >= CONFIG.pleas.length;
+  no.textContent = gaveUp ? "Yes" : CONFIG.pleas[state.dodges];
+  yes.style.transform = "scale(" + Math.min(1 + state.dodges * 0.07, 1.5) + ")";
+}
+
+function place(el, x, y) { el.style.left = x + "px"; el.style.top = y + "px"; }
+
+function home() {
+  const w = arena.clientWidth, h = arena.clientHeight;
+  const gap = 18, total = yes.offsetWidth + gap + no.offsetWidth;
+  const x0 = Math.max(0, (w - total) / 2), y = (h - yes.offsetHeight) / 2;
+  place(yes, x0, y);
+  place(no, x0 + yes.offsetWidth + gap, y);
+}
+
+function dodge() {
+  if (state.accepted || state.dodges >= CONFIG.pleas.length) return;
+  state.dodges++;
+  render();
+  if (state.dodges >= CONFIG.pleas.length) { home(); return; }
+  const w = arena.clientWidth, h = arena.clientHeight;
+  const bw = no.offsetWidth, bh = no.offsetHeight;
+  const yr = yes.getBoundingClientRect(), ar = arena.getBoundingClientRect();
+  const cur = { x: no.offsetLeft, y: no.offsetTop };
+  let best = null;
+  for (let i = 0; i < 40; i++) {
+    const x = Math.random() * Math.max(0, w - bw), y = Math.random() * Math.max(0, h - bh);
+    const overlapsYes = x < yr.right - ar.left + 10 && x + bw > yr.left - ar.left - 10 &&
+                        y < yr.bottom - ar.top + 10 && y + bh > yr.top - ar.top - 10;
+    const far = Math.hypot(x - cur.x, y - cur.y);
+    if (!overlapsYes && far > 70) { best = { x, y }; break; }
+    if (!overlapsYes && !best) best = { x, y };
+  }
+  if (best) place(no, best.x, best.y);
+}
+
+function accept() {
+  state.accepted = true;
+  $("markDate").textContent = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
+  render();
+  if (!reduced) hearts();
+}
+
+no.addEventListener("pointerenter", dodge);
+no.addEventListener("pointerdown", e => { if (state.dodges < CONFIG.pleas.length) { e.preventDefault(); dodge(); } });
+no.addEventListener("focus", () => { if (no.matches(":focus-visible")) dodge(); });
+no.addEventListener("click", () => { if (state.dodges >= CONFIG.pleas.length) accept(); else dodge(); });
+yes.addEventListener("click", accept);
+$("again").addEventListener("click", () => { state.accepted = false; state.dodges = 0; render(); home(); });
+addEventListener("resize", () => { if (!state.accepted) home(); });
+
+let raf = 0;
+function hearts() {
+  const c = $("confetti"), ctx = c.getContext("2d");
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const colors = ["#e0314b", "#ff8fa3", "#fdf1f3", "#2f4fa8"];
+  const ps = Array.from({ length: 70 }, () => ({
+    x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6,
+    s: 8 + Math.random() * 14, vy: 1.6 + Math.random() * 2.6, vx: -0.6 + Math.random() * 1.2,
+    r: Math.random() * 6.28, vr: -0.03 + Math.random() * 0.06, c: colors[Math.floor(Math.random() * colors.length)]
+  }));
+  cancelAnimationFrame(raf);
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    for (const p of ps) {
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      if (p.y < innerHeight + 30) alive = true;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.sin(p.r) * 0.5); ctx.scale(p.s / 20, p.s / 20);
+      ctx.fillStyle = p.c; ctx.beginPath();
+      ctx.moveTo(0, 6); ctx.bezierCurveTo(-12, -4, -6, -14, 0, -6); ctx.bezierCurveTo(6, -14, 12, -4, 0, 6);
+      ctx.fill(); ctx.restore();
+    }
+    if (alive && t - t0 < 9000 && state.accepted) raf = requestAnimationFrame(frame);
+    else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+render(); home();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (!state.accepted && state.dodges === 0) home(); });
+</script>
+</body>
+</html>
