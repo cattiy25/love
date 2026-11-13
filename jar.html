@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ချစ်ရတဲ့ အကြောင်းရင်းများ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --shelf: #5b8def;
+  --navy: #132a5e;
+  --lid: #ffcf4a;
+  --paper: #fffaf0;
+  --pink: #ffc2d4;
+  --mint: #bff0d4;
+  --font: "Noto Sans Myanmar", "Padauk", "Myanmar Text", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body { background: var(--shelf); color: var(--navy); font-family: var(--font); font-size: 17px; line-height: 1.8; padding: 26px 16px 30px; }
+.wrap { max-width: 460px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+h1 { font-weight: 900; font-size: clamp(27px, 8vw, 38px); line-height: 1.55; margin: 0; color: var(--paper); text-shadow: 3px 3px 0 var(--navy); overflow-wrap: anywhere; }
+.sub { margin: 6px 0 0; color: var(--paper); overflow-wrap: anywhere; }
+.stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.jar { position: relative; width: 210px; height: 268px; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 30px; font: inherit; color: inherit; }
+.jar .lidp { position: absolute; top: 0; left: 36px; right: 36px; height: 30px; background: var(--lid); border: 4px solid var(--navy); border-radius: 8px; z-index: 2; }
+.jar .neck { position: absolute; top: 26px; left: 48px; right: 48px; height: 22px; background: rgba(255,255,255,.25); border-left: 4px solid var(--navy); border-right: 4px solid var(--navy); }
+.jar .glass { position: absolute; top: 44px; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.26); border: 4px solid var(--navy); border-radius: 34px 34px 26px 26px; overflow: hidden; }
+.jar .glass::after { content: ""; position: absolute; top: 16px; left: 14px; width: 12px; height: 46%; border-radius: 8px; background: rgba(255,255,255,.55); }
+.slip { position: absolute; width: 40px; height: 22px; border: 2px solid var(--navy); border-radius: 3px; }
+.jar.shake { animation: wob .35s ease; }
+@keyframes wob { 20% { transform: rotate(-6deg); } 60% { transform: rotate(6deg); } }
+.jar:disabled { cursor: default; }
+.hint { margin: 0; color: var(--paper); text-align: center; min-height: 1.8em; font-weight: 700; }
+.note { width: 100%; background: var(--paper); border: 3px solid var(--navy); border-radius: 6px; box-shadow: 6px 6px 0 var(--navy); padding: 14px 20px 16px; transform: rotate(-1.2deg); }
+.note.pop { animation: pop .35s cubic-bezier(.3,1.5,.5,1) both; }
+@keyframes pop { from { transform: translateY(-30px) rotate(6deg) scale(.7); opacity: 0; } to { transform: rotate(-1.2deg); opacity: 1; } }
+.note small { font-size: 14px; font-weight: 700; color: #3f6fd0; }
+.note p { margin: 2px 0 0; font-size: clamp(21px, 6vw, 26px); font-weight: 700; line-height: 1.7; overflow-wrap: anywhere; }
+.note .sig { font-size: 17px; font-weight: 400; text-align: right; margin-top: 8px; }
+h2 { font-weight: 900; font-size: 20px; margin: 0 0 10px; color: var(--paper); }
+.pile { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.pile li { background: var(--paper); border: 2px solid var(--navy); border-radius: 4px; padding: 6px 12px; display: grid; grid-template-columns: 34px 1fr; gap: 8px; align-items: baseline; overflow-wrap: anywhere; }
+.pile li:nth-child(3n+1) { background: var(--pink); } .pile li:nth-child(3n+2) { background: var(--mint); }
+.pile b { font-weight: 900; }
+.empty { margin: 0; color: var(--paper); }
+.refill { align-self: center; font: inherit; font-size: 15px; font-weight: 700; color: var(--paper); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 6px 10px; }
+:is(.jar, .refill):focus-visible { outline: 3px solid var(--paper); outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) { .jar.shake, .note.pop { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="title">ချစ်ရတဲ့ အကြောင်းရင်းများ</h1>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <div class="stage">
+    <button class="jar" id="jar" type="button">
+      <span class="lidp"></span><span class="neck"></span><span class="glass" id="glass"></span>
+    </button>
+    <p class="hint" id="hint" aria-live="polite"></p>
+    <div class="note" id="note" aria-live="polite">
+      <small id="noteNo"></small>
+      <p id="noteText"></p>
+      <p class="sig" id="noteSig"></p>
+    </div>
+  </div>
+
+  <section aria-labelledby="h-pile">
+    <h2 id="h-pile">ဖွင့်ပြီးသား စာရွက်များ</h2>
+    <ol class="pile" id="pile"></ol>
+    <p class="empty" id="pileEmpty">မရှိသေးဘူး။ ဖန်ဘူးက စောင့်နေတယ်။</p>
+  </section>
+  <button class="refill" id="refill" type="button">စာရွက်တွေ ဖန်ဘူးထဲ ပြန်ထည့်မယ်</button>
+</div>
+
+<script>
+/* Engine for every reasons jar. The customer's names and reasons live in jar-NAME.js; open jar.html?c=NAME. */
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
+const MY = ["၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"];
+const myNum = n => String(n).replace(/[0-9]/g, d => MY[+d]);
+const COLORS = ["#fffaf0", "#ffc2d4", "#bff0d4", "#ffe9a3"];
+const who = (new URLSearchParams(location.search).get("c") || "baby").replace(/[^a-zA-Z0-9-]/g, "") || "baby";
+const STORE = "jar-opened-" + who;
+let data = { to: "", from: "", reasons: [] }, opened = [], last = -1;
+function save() { try { localStorage.setItem(STORE, JSON.stringify(opened)); } catch (e) {} }
+
+function render(pop) {
+  const n = data.reasons.length, left = n - opened.length;
+  $("title").textContent = data.to + "ကို ချစ်ရတဲ့ အကြောင်းရင်း " + myNum(n) + " ခု";
+  document.title = data.to + " အတွက်";
+  $("sub").textContent = data.from + " ကိုယ်တိုင် တစ်ရွက်ချင်း ခေါက်ထည့်ထားတာ။ လိုအပ်တဲ့အချိန်တိုင်း တစ်ရွက်ထုတ်ဖတ်ပါ။";
+  const glass = $("glass"); glass.textContent = "";
+  for (let k = 0; k < Math.min(left, 36); k++) {
+    const s = el("span", "slip");
+    s.style.left = (4 + (k * 37) % 150) + "px";
+    s.style.bottom = (4 + Math.floor(k / 4) * 19 + (k * 13) % 9) + "px";
+    s.style.transform = "rotate(" + ((k * 47) % 50 - 25) + "deg)";
+    s.style.background = COLORS[k % COLORS.length];
+    glass.append(s);
+  }
+  const jar = $("jar");
+  jar.disabled = left === 0;
+  jar.setAttribute("aria-label", left ? "ဖန်ဘူး။ စာရွက် " + myNum(left) + " ရွက် ကျန်တယ်။ နှိပ်ပြီး တစ်ရွက်ထုတ်ပါ။" : "ဖန်ဘူးက ကုန်သွားပြီ။");
+  $("hint").textContent = left === 0 ? "ဖန်ဘူးက ကုန်သွားပြီ၊ ဒါပေမဲ့ ချစ်ရတဲ့အကြောင်းရင်းတွေက မကုန်သေးဘူး။" : left === n ? "ဖန်ဘူးကို နှိပ်ပြီး စာရွက်တစ်ရွက် ထုတ်ပါ။" : "စာရွက် " + myNum(left) + " ရွက် ကျန်သေးတယ်။ နောက်တစ်ရွက် နှိပ်ပါ။";
+  const has = last >= 0 && data.reasons[last] != null;
+  $("noteNo").textContent = has ? "အကြောင်းရင်း အမှတ် " + myNum(last + 1) : "မစခင်";
+  $("noteText").textContent = has ? data.reasons[last] : "ဒီဖန်ဘူးထဲက စာတိုင်း အမှန်တွေချည်းပဲ။ ဖြည်းဖြည်းချင်း ဖွင့်ဖတ်ပါ။";
+  $("noteSig").textContent = "— " + data.from;
+  if (pop) { const nt = $("note"); nt.classList.remove("pop"); void nt.offsetWidth; nt.classList.add("pop"); jar.classList.remove("shake"); void jar.offsetWidth; jar.classList.add("shake"); }
+  const pile = $("pile"); pile.textContent = "";
+  opened.slice().reverse().forEach(i => { if (data.reasons[i] == null) return; const li = el("li"); li.append(el("b", "", myNum(i + 1)), el("span", "", data.reasons[i])); pile.append(li); });
+  $("pileEmpty").style.display = opened.length ? "none" : "";
+  $("refill").style.display = opened.length ? "" : "none";
+}
+
+$("jar").addEventListener("click", () => {
+  const rest = data.reasons.map((_, i) => i).filter(i => !opened.includes(i));
+  if (!rest.length) return;
+  last = rest[Math.floor(Math.random() * rest.length)];
+  opened.push(last); save(); render(true);
+});
+$("refill").addEventListener("click", () => { opened = []; last = -1; save(); render(); });
+
+const tag = document.createElement("script");
+tag.src = "jar-" + who + ".js";
+tag.onload = () => {
+  if (!window.JAR_DATA || !Array.isArray(window.JAR_DATA.reasons)) return fail();
+  data = window.JAR_DATA;
+  try { const s = JSON.parse(localStorage.getItem(STORE)); if (Array.isArray(s)) opened = s.filter(i => Number.isInteger(i) && i >= 0 && i < data.reasons.length); } catch (e) {}
+  render();
+};
+tag.onerror = fail;
+function fail() { $("hint").textContent = "ဒီ link က မမှန်ပါဘူး။ ပို့ပေးတဲ့သူကို link ပြန်တောင်းပါ။"; $("jar").disabled = true; }
+document.head.append(tag);
+</script>
+</body>
+</html>
