@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ဘေဘီ အတွက်</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  color-scheme: light;
+  --ground: #bfe9df;
+  --ground-deep: #9bd8ca;
+  --ink: #3b2a4a;
+  --ink-soft: #6d5c7c;
+  --mochi: #fffdf8;
+  --blush: #ff9bb0;
+  --angry: #ff5c7a;
+  --font: "Noto Sans Myanmar", "Padauk", "Myanmar Text", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; margin: 0; }
+body { background: linear-gradient(var(--ground), var(--ground-deep)) fixed var(--ground); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.8; padding: 24px 16px 30px; overflow-x: hidden; }
+#hearts { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+.wrap { max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+h1 { font-weight: 900; font-size: clamp(28px, 8.4vw, 38px); line-height: 1.5; margin: 0; overflow-wrap: anywhere; }
+.sub { margin: 2px 0 0; color: var(--ink-soft); overflow-wrap: anywhere; }
+.stagecard { background: rgba(255,253,248,.55); border: 3px solid var(--ink); border-radius: 22px; padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 10px; align-items: center; }
+#face { width: 210px; max-width: 70%; height: auto; display: block; }
+#face.bump { animation: bump .35s ease; }
+@keyframes bump { 40% { transform: scale(1.08) rotate(-3deg); } }
+.caption { margin: 0; font-weight: 700; text-align: center; min-height: 1.8em; overflow-wrap: anywhere; }
+.meter { width: 100%; }
+.meter .top { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; }
+.bar { height: 18px; background: var(--mochi); border: 2.5px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 100%; background: var(--angry); border-right: 2.5px solid var(--ink); transition: width .5s ease; }
+.bar i.zero { border-right: 0; }
+.bubble { position: relative; background: var(--mochi); border: 3px solid var(--ink); border-radius: 16px; padding: 12px 16px; box-shadow: 4px 4px 0 var(--ink); }
+.bubble small { display: block; font-size: 13px; font-weight: 700; color: var(--angry); }
+.bubble p { margin: 0; font-size: 17px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.bubble.pop { animation: pop .3s ease both; }
+@keyframes pop { from { transform: translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+h2 { font-size: 14px; font-weight: 700; margin: 4px 0 0; color: var(--ink-soft); }
+.acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.act { font: inherit; font-weight: 700; color: var(--ink); background: var(--mochi); border: 3px solid var(--ink); border-radius: 14px; padding: 10px 10px; cursor: pointer; box-shadow: 0 4px 0 var(--ink); min-height: 56px; overflow-wrap: anywhere; }
+.act:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.act:disabled { background: var(--blush); box-shadow: none; transform: translateY(4px); cursor: default; opacity: .8; }
+.again { align-self: center; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 6px 10px; }
+:is(.act, .again):focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) { #face.bump, .bubble.pop { animation: none; } .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<canvas id="hearts" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header>
+    <h1>စိတ်မကောက်ပါနဲ့တော့နော်</h1>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <div class="stagecard">
+    <svg id="face" viewBox="0 0 200 170" role="img" aria-label="စိတ်ကောက်နေတဲ့ မိုချိလေး"></svg>
+    <p class="caption" id="caption" aria-live="polite"></p>
+    <div class="meter">
+      <div class="top"><span>စိတ်ကောက်မီတာ</span><span id="pct"></span></div>
+      <div class="bar" id="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"><i id="fill"></i></div>
+    </div>
+  </div>
+
+  <div class="bubble" id="bubble" aria-live="polite">
+    <small id="who"></small>
+    <p id="line"></p>
+  </div>
+
+  <h2 id="h-acts">ဘယ်လိုချော့ရမလဲ၊ ကြိုက်တာကို နှိပ်ပါ</h2>
+  <div class="acts" id="acts" role="group" aria-labelledby="h-acts"></div>
+  <button class="again" id="again" type="button">ပြန်စိတ်ကောက်မယ်</button>
+</div>
+
+<script>
+const CONFIG = {
+  to: "ဘေဘီ",
+  from: "ကိုကိုရဲရင့်",
+  acts: [
+    ["မုန့်ကျွေးမယ်", "{to} ကြိုက်တဲ့ bubble tea ကို ပုလဲများများနဲ့ ကိုကိုကိုယ်တိုင် လာပို့ပေးမယ်။"],
+    ["တောင်းပန်မယ်", "ကိုကို မှားပါတယ်။ ဆင်ခြေမပေးတော့ဘူး။ နောက်တစ်ခါ အရင်ဆုံး နားထောင်ပါ့မယ်။"],
+    ["ဖက်ထားမယ်", "တွေ့တာနဲ့ စက္ကန့် ၂၀ ကြာအောင် ဖက်ထားမယ်။ လွှတ်ခိုင်းမှ လွှတ်မယ်။"],
+    ["ဟာသပြောမယ်", "ကိုကို့ဟာသတွေ မရယ်ရမှန်း သိပါတယ်။ ဒါပေမဲ့ {to} ပြုံးတဲ့အထိ ပြောနေဦးမှာ။"],
+    ["အလိုလိုက်မယ်", "ဒီတစ်ပတ်လုံး ဘာစားမလဲ၊ ဘာကြည့်မလဲ {to} ပဲ ဆုံးဖြတ်ပါ။ ကိုကို ဘာမှ မငြင်းဘူး။"],
+    ["ချစ်တယ်ပြောမယ်", "စိတ်ကောက်နေတဲ့ {to} ကိုလည်း ချစ်တယ်။ ဒါပေမဲ့ ပြုံးနေတဲ့ {to} ကို ပိုလွမ်းတယ်။"]
+  ],
+  final: "ကျေးဇူးပါ {to}။ နောက်တစ်ခါ စိတ်မကောက်ရအောင် ကြိုးစားပါ့မယ်။ မနက်ဖြန် တွေ့ကြမယ်နော်။",
+  captions: ["ကဲပါ... ခွင့်လွှတ်လိုက်ပြီ", "နောက်ထပ် နည်းနည်းပဲ ချော့ပါဦး", "ပြုံးချင်လာပြီ၊ ဒါပေမဲ့ မပြုံးသေးဘူး", "နည်းနည်းတော့ စဉ်းစားပေးမယ်", "ဟွန့်... စကားမပြောဘူး"]
+};
+
+const $ = id => document.getElementById(id);
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const MY = ["၀", "၁", "၂", "၃", "၄", "၅", "၆", "၇", "၈", "၉"];
+const myNum = n => String(n).replace(/[0-9]/g, d => MY[+d]);
+let state = { to: CONFIG.to, from: CONFIG.from, acts: CONFIG.acts.map(a => a.slice()), final: CONFIG.final, used: [], last: -1 };
+const fill = s => String(s).split("{to}").join(state.to);
+
+function faceSVG(m) {
+  const S = 'fill="none" stroke="#3b2a4a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"';
+  const brows = ['', '', '<path ' + S + ' d="M58 66h22M120 66h22"/>', '<path ' + S + ' d="M56 62l24 6M144 62l-24 6"/>', '<path ' + S + ' d="M54 56l28 12M146 56l-28 12"/>'][m];
+  const eyes = m === 0 ? '<path ' + S + ' d="M58 84q11-13 22 0M120 84q11-13 22 0"/>'
+    : m === 4 ? '<path ' + S + ' d="M58 82q11 8 22 0M120 82q11 8 22 0"/>'
+    : '<circle cx="' + (m === 3 ? 74 : 69) + '" cy="82" r="6.5" fill="#3b2a4a"/><circle cx="' + (m === 3 ? 136 : 131) + '" cy="82" r="6.5" fill="#3b2a4a"/>';
+  const mouth = ['<path ' + S + ' d="M80 106q20 24 40 0"/>', '<path ' + S + ' d="M86 110q14 11 28 0"/>', '<path ' + S + ' d="M92 113q8 4 16 0"/>', '<path ' + S + ' d="M90 114h20"/>', '<path ' + S + ' d="M88 118q12-11 24 0"/>'][m];
+  const cheek = m >= 3 ? 15 : 12;
+  const extra = m === 4 ? '<path ' + S + ' stroke="#ff5c7a" d="M160 30l10-10M168 40l14-4M154 22l2-14"/>'
+    : m === 0 ? '<path fill="#ff5c7a" d="M170 34c-9-6-12-14-6-18 4-2 6 1 6 3 0-2 2-5 6-3 6 4 3 12-6 18zM30 44c-7-5-9-11-5-14 3-2 5 1 5 2 0-1 2-4 5-2 4 3 2 9-5 14z"/>' : '';
+  return '<ellipse cx="100" cy="158" rx="62" ry="7" fill="rgba(59,42,74,.15)"/>' +
+    '<path fill="#fffdf8" stroke="#3b2a4a" stroke-width="5" d="M100 24c46 0 84 26 84 70 0 40-34 60-84 60S16 134 16 94c0-44 38-70 84-70z"/>' +
+    '<circle cx="46" cy="102" r="' + cheek + '" fill="#ff9bb0"/><circle cx="154" cy="102" r="' + cheek + '" fill="#ff9bb0"/>' + brows + eyes + mouth + extra;
+}
+
+function render(tapped) {
+  const n = state.acts.length, left = n - state.used.length;
+  const pct = n ? Math.round(100 * left / n) : 0;
+  const mood = pct === 0 ? 0 : pct <= 25 ? 1 : pct <= 50 ? 2 : pct <= 75 ? 3 : 4;
+  $("sub").textContent = state.to + " အတွက် " + state.from + " ရဲ့ ချော့နည်း " + myNum(n) + " မျိုး။";
+  $("face").innerHTML = faceSVG(mood);
+  $("face").setAttribute("aria-label", pct === 0 ? "ပြုံးနေတဲ့ မိုချိလေး" : "စိတ်ကောက်နေတဲ့ မိုချိလေး");
+  $("caption").textContent = CONFIG.captions[mood];
+  $("pct").textContent = myNum(pct) + "%";
+  $("fill").style.width = pct + "%"; $("fill").classList.toggle("zero", pct === 0 || pct === 100);
+  $("bar").setAttribute("aria-valuenow", pct);
+  $("who").textContent = state.from + " က";
+  $("line").textContent = pct === 0 ? fill(state.final) : state.last >= 0 && state.acts[state.last] ? fill(state.acts[state.last][1]) : "ချော့ခွင့်ပေးပါ။ အောက်က တစ်ခုခုကို နှိပ်ကြည့်ပါ။";
+  const box = $("acts"); box.textContent = "";
+  state.acts.forEach((a, k) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "act"; b.textContent = a[0]; b.disabled = state.used.includes(k);
+    b.addEventListener("click", () => { if (state.used.includes(k)) return; state.used.push(k); state.last = k; render(true); });
+    box.append(b);
+  });
+  $("again").style.visibility = state.used.length ? "visible" : "hidden";
+  if (tapped) {
+    ["face", "bubble"].forEach(id => { const e = $(id), c = id === "face" ? "bump" : "pop"; e.classList.remove(c); void e.getBoundingClientRect(); e.classList.add(c); });
+    if (pct === 0 && !reduced) hearts();
+  }
+}
+$("again").addEventListener("click", () => { state.used = []; state.last = -1; render(); });
+
+let raf = 0;
+function hearts() {
+  const c = $("hearts"), ctx = c.getContext("2d"), dpr = Math.min(devicePixelRatio || 1, 2);
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const cols = ["#ff5c7a", "#ff9bb0", "#fffdf8"];
+  const ps = Array.from({ length: 60 }, () => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6, s: 8 + Math.random() * 12, vy: 1.8 + Math.random() * 2.6, vx: -0.6 + Math.random() * 1.2, r: Math.random() * 6.28, c: cols[Math.floor(Math.random() * 3)] }));
+  cancelAnimationFrame(raf);
+  const t0 = performance.now();
+  (function frame(t) {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    let alive = false;
+    for (const p of ps) {
+      p.x += p.vx; p.y += p.vy; p.r += 0.04;
+      if (p.y < innerHeight + 30) alive = true;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(Math.sin(p.r) * 0.5); ctx.scale(p.s / 20, p.s / 20);
+      ctx.fillStyle = p.c; ctx.strokeStyle = "#3b2a4a"; ctx.lineWidth = 2; ctx.beginPath();
+      ctx.moveTo(0, 8); ctx.bezierCurveTo(-14, -3, -7, -15, 0, -6); ctx.bezierCurveTo(7, -15, 14, -3, 0, 8);
+      ctx.fill(); ctx.stroke(); ctx.restore();
+    }
+    if (alive && t - t0 < 9000 && state.used.length === state.acts.length) raf = requestAnimationFrame(frame); else ctx.clearRect(0, 0, innerWidth, innerHeight);
+  })(t0);
+}
+
+render();
+</script>
+</body>
+</html>
